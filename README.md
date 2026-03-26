@@ -38,6 +38,18 @@ This project hosts a minimal WhatsApp Cloud API webhook that automatically repli
 - `PHONE_NUMBER_ID`: WhatsApp Business phone number ID.
 - `DEFAULT_REPLY`: Message used for the automated reply (default provided).
 
+### Linking to the number 0256493349
+
+To use this bot with your WhatsApp number **0256493349**:
+
+1. In the Meta developer console, make sure 0256493349 is added as a **WhatsApp Business** number.
+2. Locate its **Phone Number ID** (not just the phone digits) in the WhatsApp > API Setup section.
+3. Set that value in your `.env`:
+   ```bash
+   PHONE_NUMBER_ID=<phone-number-id-for-0256493349>
+   ```
+4. Keep `WHATSAPP_TOKEN` as the permanent token tied to this number. The bot will now send auto-replies from 0256493349 to anyone who messages it.
+
 ## Endpoints
 
 - `GET /webhook`: Verification endpoint used by Meta during webhook setup.
