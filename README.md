@@ -67,3 +67,11 @@ Run the small integration tests with:
 npm test
 ```
 These tests cover webhook verification and accepting inbound message payloads.
+
+## What is next?
+
+After linking 0256493349, follow these quick steps to go live:
+
+1. Fill `.env` with `WHATSAPP_TOKEN`, `VERIFY_TOKEN`, and `PHONE_NUMBER_ID` for 0256493349, then start the server: `npm start`.
+2. Expose the server over HTTPS and configure the Meta webhook to `https://your-domain.com/webhook` with the same verify token.
+3. Send a WhatsApp message to 0256493349 from another phone; you should receive the auto-reply. Monitor the server logs for any errors.
