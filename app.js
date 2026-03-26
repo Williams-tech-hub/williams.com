@@ -18,10 +18,16 @@ class DataBundleStorage {
     }
 
     async init() {
-        await this.initDatabase();
-        await this.loadStorageInfo();
-        this.setupEventListeners();
-        this.addLog('System initialized successfully.', 'success');
+        try {
+            await this.initDatabase();
+            await this.loadStorageInfo();
+            this.setupEventListeners();
+            this.addLog('System initialized successfully.', 'success');
+        } catch (error) {
+            console.error('Initialization error:', error);
+            this.addLog(`Initialization failed: ${error.message}`, 'error');
+            throw error;
+        }
     }
 
     // Initialize IndexedDB
@@ -407,6 +413,11 @@ class DataBundleStorage {
     // Add log entry
     addLog(message, type = 'info') {
         const logContainer = document.getElementById('activityLog');
+        if (!logContainer) {
+            console.log(`[${type}] ${message}`);
+            return;
+        }
+
         const logEntry = document.createElement('p');
         logEntry.className = `log-entry ${type}`;
 
@@ -453,5 +464,10 @@ class DataBundleStorage {
 // Initialize the application
 let app;
 document.addEventListener('DOMContentLoaded', () => {
-    app = new DataBundleStorage();
+    try {
+        app = new DataBundleStorage();
+    } catch (error) {
+        console.error('Failed to initialize application:', error);
+        alert('Failed to initialize the WiFi Data Bundle Storage application. Please check browser console for details.');
+    }
 });

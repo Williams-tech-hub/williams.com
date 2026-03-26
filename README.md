@@ -50,6 +50,27 @@ python -m http.server 8000
 # Then visit http://localhost:8000
 ```
 
+### Testing the Application
+To verify everything works properly, open `test.html` in your browser to run the automated test suite:
+
+```bash
+# Option 1: Direct browser access
+open test.html  # macOS
+start test.html # Windows
+xdg-open test.html # Linux
+
+# Option 2: Via local server
+python -m http.server 8000
+# Then visit http://localhost:8000/test.html
+```
+
+The test suite will automatically verify:
+- Browser compatibility (IndexedDB, Promises, ES6 support)
+- Database operations (creation, read, write, delete)
+- Storage capacity and quota checks
+- Data bundle operations
+- Error handling and edge cases
+
 ### Browser Compatibility
 - Chrome/Edge 24+
 - Firefox 16+
@@ -112,6 +133,7 @@ williams.com/
 ├── index.html          # Main HTML structure
 ├── styles.css          # CSS styling and responsive design
 ├── app.js             # JavaScript application logic
+├── test.html          # Automated test suite
 ├── README.md          # This file
 ├── LICENSE            # Project license
 └── .gitignore         # Git ignore rules
