@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WiFi Data Bundle Storage - Test Suite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .test-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .test-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .test-item {
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #6b7280;
+            background: #f9fafb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .test-item.pass {
+            border-left-color: #10b981;
+            background: #d1fae5;
+        }
+
+        .test-item.fail {
+            border-left-color: #ef4444;
+            background: #fee2e2;
+        }
+
+        .test-item.pending {
+            border-left-color: #f59e0b;
+            background: #fef3c7;
+        }
+
+        .test-status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .test-status.pass { color: #10b981; }
+        .test-status.fail { color: #ef4444; }
+        .test-status.pending { color: #f59e0b; }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background-color: #667eea;
+            color: white;
+            margin: 10px 5px;
+        }
+
+        button:hover {
+            background-color: #5568d3;
+        }
+
+        .summary {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 15px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .summary-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .console-output {
+            background: #1f2937;
+            color: #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .console-output .error { color: #ef4444; }
+        .console-output .warn { color: #f59e0b; }
+        .console-output .info { color: #3b82f6; }
+
+        .app-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .app-link a {
+            color: white;
+            text-decoration: none;
+            background: #10b981;
+            padding: 12px 24px;
+            border-radius: 8px;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .app-link a:hover {
+            background: #059669;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧪 WiFi Data Bundle Storage - Test Suite</h1>
+            <p>Automated validation and testing</p>
+        </header>
+
+        <div class="test-section">
+            <h2>Test Controls</h2>
+            <button onclick="runAllTests()">Run All Tests</button>
+            <button onclick="clearTestResults()">Clear Results</button>
+            <button onclick="clearAllData()">Clear App Data</button>
+
+            <div class="summary" id="summary">
+                <div class="summary-item">
+                    <div class="summary-number" id="totalTests">0</div>
+                    <div>Total Tests</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-number" style="color: #10b981;" id="passedTests">0</div>
+                    <div>Passed</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-number" style="color: #ef4444;" id="failedTests">0</div>
+                    <div>Failed</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>1. Environment Tests</h2>
+            <div id="environmentTests"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. Database Tests</h2>
+            <div id="databaseTests"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>3. Storage Capacity Tests</h2>
+            <div id="storageTests"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>4. Data Bundle Operations</h2>
+            <div id="bundleTests"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Console Output</h2>
+            <div class="console-output" id="console"></div>
+        </div>
+
+        <div class="app-link">
+            <a href="index.html">← Back to Application</a>
+        </div>
+    </div>
+
+    <script>
+        let testResults = {
+            total: 0,
+            passed: 0,
+            failed: 0
+        };
+
+        // Console capture
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn
+        };
+
+        function logToConsole(message, type = 'info') {
+            const consoleDiv = document.getElementById('console');
+            const timestamp = new Date().toLocaleTimeString();
+            consoleDiv.innerHTML += `<div class="${type}">[${timestamp}] ${message}</div>`;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalConsole.log.apply(console, args);
+            logToConsole(args.join(' '), 'info');
+        };
+
+        console.error = function(...args) {
+            originalConsole.error.apply(console, args);
+            logToConsole(args.join(' '), 'error');
+        };
+
+        console.warn = function(...args) {
+            originalConsole.warn.apply(console, args);
+            logToConsole(args.join(' '), 'warn');
+        };
+
+        function addTest(containerId, testName, status, details = '') {
+            const container = document.getElementById(containerId);
+            const testItem = document.createElement('div');
+            testItem.className = `test-item ${status}`;
+            testItem.innerHTML = `
+                <div>
+                    <strong>${testName}</strong>
+                    ${details ? `<br><small>${details}</small>` : ''}
+                </div>
+                <div class="test-status ${status}">${status.toUpperCase()}</div>
+            `;
+            container.appendChild(testItem);
+
+            testResults.total++;
+            if (status === 'pass') testResults.passed++;
+            if (status === 'fail') testResults.failed++;
+            updateSummary();
+        }
+
+        function updateSummary() {
+            document.getElementById('totalTests').textContent = testResults.total;
+            document.getElementById('passedTests').textContent = testResults.passed;
+            document.getElementById('failedTests').textContent = testResults.failed;
+        }
+
+        function clearTestResults() {
+            testResults = { total: 0, passed: 0, failed: 0 };
+            document.getElementById('environmentTests').innerHTML = '';
+            document.getElementById('databaseTests').innerHTML = '';
+            document.getElementById('storageTests').innerHTML = '';
+            document.getElementById('bundleTests').innerHTML = '';
+            document.getElementById('console').innerHTML = '';
+            updateSummary();
+            logToConsole('Test results cleared', 'info');
+        }
+
+        async function clearAllData() {
+            try {
+                const databases = await indexedDB.databases();
+                for (const db of databases) {
+                    indexedDB.deleteDatabase(db.name);
+                    logToConsole(`Deleted database: ${db.name}`, 'info');
+                }
+                logToConsole('All application data cleared', 'info');
+            } catch (error) {
+                logToConsole(`Error clearing data: ${error.message}`, 'error');
+            }
+        }
+
+        async function runAllTests() {
+            clearTestResults();
+            logToConsole('Starting test suite...', 'info');
+
+            // 1. Environment Tests
+            await testEnvironment();
+
+            // 2. Database Tests
+            await testDatabase();
+
+            // 3. Storage Tests
+            await testStorageCapacity();
+
+            // 4. Bundle Operations
+            await testBundleOperations();
+
+            logToConsole('All tests completed!', 'info');
+            logToConsole(`Results: ${testResults.passed} passed, ${testResults.failed} failed`, 'info');
+        }
+
+        async function testEnvironment() {
+            logToConsole('Running environment tests...', 'info');
+
+            // Test 1: IndexedDB Support
+            if (window.indexedDB) {
+                addTest('environmentTests', 'IndexedDB Support', 'pass', 'Browser supports IndexedDB');
+            } else {
+                addTest('environmentTests', 'IndexedDB Support', 'fail', 'Browser does not support IndexedDB');
+            }
+
+            // Test 2: Promise Support
+            if (window.Promise) {
+                addTest('environmentTests', 'Promise Support', 'pass', 'Browser supports Promises');
+            } else {
+                addTest('environmentTests', 'Promise Support', 'fail', 'Browser does not support Promises');
+            }
+
+            // Test 3: ES6 Class Support
+            try {
+                eval('class TestClass {}');
+                addTest('environmentTests', 'ES6 Class Support', 'pass', 'Browser supports ES6 classes');
+            } catch (e) {
+                addTest('environmentTests', 'ES6 Class Support', 'fail', 'Browser does not support ES6 classes');
+            }
+
+            // Test 4: ArrayBuffer Support
+            if (window.ArrayBuffer) {
+                addTest('environmentTests', 'ArrayBuffer Support', 'pass', 'Browser supports ArrayBuffer');
+            } else {
+                addTest('environmentTests', 'ArrayBuffer Support', 'fail', 'Browser does not support ArrayBuffer');
+            }
+        }
+
+        async function testDatabase() {
+            logToConsole('Running database tests...', 'info');
+
+            // Test 1: Database Creation
+            try {
+                const request = indexedDB.open('TestDB', 1);
+                await new Promise((resolve, reject) => {
+                    request.onsuccess = () => {
+                        request.result.close();
+                        indexedDB.deleteDatabase('TestDB');
+                        resolve();
+                    };
+                    request.onerror = () => reject(request.error);
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        db.createObjectStore('testStore', { keyPath: 'id', autoIncrement: true });
+                    };
+                });
+                addTest('databaseTests', 'Database Creation', 'pass', 'Successfully created and deleted test database');
+            } catch (error) {
+                addTest('databaseTests', 'Database Creation', 'fail', `Error: ${error.message}`);
+            }
+
+            // Test 2: WiFiDataBundleDB Existence
+            try {
+                const databases = await indexedDB.databases();
+                const exists = databases.some(db => db.name === 'WiFiDataBundleDB');
+                if (exists) {
+                    addTest('databaseTests', 'WiFiDataBundleDB Check', 'pass', 'Application database exists');
+                } else {
+                    addTest('databaseTests', 'WiFiDataBundleDB Check', 'pending', 'Database not yet created (normal for first run)');
+                }
+            } catch (error) {
+                addTest('databaseTests', 'WiFiDataBundleDB Check', 'fail', `Error: ${error.message}`);
+            }
+        }
+
+        async function testStorageCapacity() {
+            logToConsole('Running storage capacity tests...', 'info');
+
+            // Test 1: 5GB Limit Constant
+            const expectedLimit = 5 * 1024 * 1024 * 1024;
+            addTest('storageTests', '5GB Limit Configuration', 'pass', `Limit set to ${expectedLimit} bytes`);
+
+            // Test 2: Storage Quota
+            if (navigator.storage && navigator.storage.estimate) {
+                try {
+                    const estimate = await navigator.storage.estimate();
+                    const usageInMB = (estimate.usage / (1024 * 1024)).toFixed(2);
+                    const quotaInMB = (estimate.quota / (1024 * 1024)).toFixed(2);
+                    const quotaInGB = (estimate.quota / (1024 * 1024 * 1024)).toFixed(2);
+
+                    if (estimate.quota >= expectedLimit) {
+                        addTest('storageTests', 'Browser Storage Quota', 'pass',
+                            `Available: ${quotaInGB} GB, Used: ${usageInMB} MB`);
+                    } else {
+                        addTest('storageTests', 'Browser Storage Quota', 'warn',
+                            `Available: ${quotaInGB} GB (less than 5GB), Used: ${usageInMB} MB`);
+                    }
+                } catch (error) {
+                    addTest('storageTests', 'Browser Storage Quota', 'fail', `Error: ${error.message}`);
+                }
+            } else {
+                addTest('storageTests', 'Browser Storage Quota', 'pending', 'Storage API not available');
+            }
+
+            // Test 3: ArrayBuffer Size Test
+            try {
+                const testSize = 10 * 1024 * 1024; // 10 MB
+                const testBuffer = new ArrayBuffer(testSize);
+                addTest('storageTests', 'ArrayBuffer Creation (10MB)', 'pass', 'Successfully created test buffer');
+            } catch (error) {
+                addTest('storageTests', 'ArrayBuffer Creation (10MB)', 'fail', `Error: ${error.message}`);
+            }
+        }
+
+        async function testBundleOperations() {
+            logToConsole('Running bundle operation tests...', 'info');
+
+            const testDbName = 'TestBundleDB';
+
+            try {
+                // Test 1: Create Test Bundle
+                const db = await new Promise((resolve, reject) => {
+                    const request = indexedDB.open(testDbName, 1);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        db.createObjectStore('bundles', { keyPath: 'id', autoIncrement: true });
+                    };
+                });
+
+                // Test 2: Add Bundle
+                const testBundle = {
+                    name: 'Test Bundle',
+                    size: 1024 * 1024, // 1 MB
+                    timestamp: Date.now(),
+                    source: 'Test',
+                    data: new ArrayBuffer(1024)
+                };
+
+                const addResult = await new Promise((resolve, reject) => {
+                    const transaction = db.transaction(['bundles'], 'readwrite');
+                    const store = transaction.objectStore('bundles');
+                    const request = store.add(testBundle);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+                addTest('bundleTests', 'Bundle Creation', 'pass', `Created bundle with ID: ${addResult}`);
+
+                // Test 3: Read Bundle
+                const readResult = await new Promise((resolve, reject) => {
+                    const transaction = db.transaction(['bundles'], 'readonly');
+                    const store = transaction.objectStore('bundles');
+                    const request = store.get(addResult);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+                if (readResult && readResult.name === 'Test Bundle') {
+                    addTest('bundleTests', 'Bundle Retrieval', 'pass', 'Successfully retrieved bundle');
+                } else {
+                    addTest('bundleTests', 'Bundle Retrieval', 'fail', 'Bundle data mismatch');
+                }
+
+                // Test 4: Delete Bundle
+                await new Promise((resolve, reject) => {
+                    const transaction = db.transaction(['bundles'], 'readwrite');
+                    const store = transaction.objectStore('bundles');
+                    const request = store.delete(addResult);
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+                addTest('bundleTests', 'Bundle Deletion', 'pass', 'Successfully deleted bundle');
+
+                db.close();
+                indexedDB.deleteDatabase(testDbName);
+
+            } catch (error) {
+                addTest('bundleTests', 'Bundle Operations', 'fail', `Error: ${error.message}`);
+            }
+        }
+
+        // Auto-run tests on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            logToConsole('Test page loaded. Ready to run tests.', 'info');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WiFi Data Bundle Storage</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>WiFi Data Bundle Storage</h1>
+            <p class="subtitle">Store up to 5GB of data bundles for offline use</p>
+        </header>
+
+        <main>
+            <!-- WiFi Connection Section -->
+            <section class="card">
+                <h2>WiFi Connection</h2>
+                <div class="connection-status">
+                    <span id="connectionStatus" class="status-badge disconnected">Disconnected</span>
+                </div>
+                <button id="connectBtn" class="btn btn-primary">Connect to WiFi</button>
+                <div id="connectionInfo" class="info-box" style="display: none;">
+                    <p><strong>Connection Time:</strong> <span id="connectionTime">0</span> seconds</p>
+                    <p><strong>Data Captured:</strong> <span id="dataCaptured">0</span> MB</p>
+                </div>
+            </section>
+
+            <!-- Storage Information Section -->
+            <section class="card">
+                <h2>Storage Information</h2>
+                <div class="storage-info">
+                    <div class="storage-bar-container">
+                        <div id="storageBar" class="storage-bar" style="width: 0%"></div>
+                    </div>
+                    <div class="storage-details">
+                        <p><strong>Used:</strong> <span id="usedStorage">0</span> MB / 5120 MB</p>
+                        <p><strong>Available:</strong> <span id="availableStorage">5120</span> MB</p>
+                        <p><strong>Percentage:</strong> <span id="storagePercent">0</span>%</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Bundles Section -->
+            <section class="card">
+                <h2>Stored Data Bundles</h2>
+                <div id="bundlesList" class="bundles-list">
+                    <p class="empty-state">No data bundles stored yet. Connect to WiFi to start capturing data.</p>
+                </div>
+            </section>
+
+            <!-- Actions Section -->
+            <section class="card">
+                <h2>Actions</h2>
+                <div class="actions">
+                    <button id="simulateDataBtn" class="btn btn-secondary">Simulate Data Collection (100MB)</button>
+                    <button id="useBundleBtn" class="btn btn-success" disabled>Use Stored Bundle</button>
+                    <button id="clearAllBtn" class="btn btn-danger">Clear All Data</button>
+                </div>
+            </section>
+
+            <!-- Usage Log Section -->
+            <section class="card">
+                <h2>Activity Log</h2>
+                <div id="activityLog" class="activity-log">
+                    <p class="log-entry">System initialized. Ready to store data bundles.</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Williams Data Bundle Storage. Built for efficient data management.</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
