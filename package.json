@@ -1,0 +1,25 @@
+{
+  "name": "williams.com",
+  "version": "1.0.0",
+  "description": "WhatsApp auto-reply webhook using the Cloud API.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Williams-tech-hub/williams.com.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Williams-tech-hub/williams.com/issues"
+  },
+  "homepage": "https://github.com/Williams-tech-hub/williams.com#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
