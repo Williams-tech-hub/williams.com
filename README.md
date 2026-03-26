@@ -50,4 +50,8 @@ When a message is received, the bot builds a reply using `DEFAULT_REPLY` and ech
 
 ## Running tests
 
-No automated tests are included. The `npm test` script is a placeholder and will simply print a notice.
+Run the small integration tests with:
+```bash
+npm test
+```
+These tests cover webhook verification and accepting inbound message payloads.

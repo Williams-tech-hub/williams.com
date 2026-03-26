@@ -4,19 +4,24 @@ const express = require('express');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const VERIFY_TOKEN = process.env.VERIFY_TOKEN || 'change-me';
-const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
-const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 const DEFAULT_REPLY =
   process.env.DEFAULT_REPLY ||
   'Thanks for your message! This is an automated reply while we are offline.';
 
 app.use(express.json());
 
-const isConfigured = () => Boolean(WHATSAPP_TOKEN && PHONE_NUMBER_ID);
+const getVerifyToken = () => process.env.VERIFY_TOKEN;
+const getWhatsappToken = () => process.env.WHATSAPP_TOKEN;
+const getPhoneNumberId = () => process.env.PHONE_NUMBER_ID;
+
+const isConfigured = () =>
+  Boolean(getWhatsappToken() && getPhoneNumberId());
 
 const sendTextMessage = async (to, text) => {
-  if (!isConfigured()) {
+  const whatsappToken = getWhatsappToken();
+  const phoneNumberId = getPhoneNumberId();
+
+  if (!whatsappToken || !phoneNumberId) {
     console.warn(
       'WHATSAPP_TOKEN or PHONE_NUMBER_ID is missing. Skipping outbound reply.'
     );
@@ -25,12 +30,12 @@ const sendTextMessage = async (to, text) => {
 
   try {
     const response = await fetch(
-      `https://graph.facebook.com/v21.0/${PHONE_NUMBER_ID}/messages`,
+      `https://graph.facebook.com/v21.0/${phoneNumberId}/messages`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+          Authorization: `Bearer ${whatsappToken}`,
         },
         body: JSON.stringify({
           messaging_product: 'whatsapp',
@@ -61,34 +66,40 @@ app.get('/health', (_req, res) => {
 });
 
 app.get('/webhook', (req, res) => {
+  const verifyToken = getVerifyToken();
+  if (!verifyToken) {
+    console.warn('VERIFY_TOKEN is not set. Rejecting verification request.');
+    return res.status(500).send('VERIFY_TOKEN not configured');
+  }
+
   const mode = req.query['hub.mode'];
   const token = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
 
-  if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+  if (mode === 'subscribe' && token === verifyToken) {
     return res.status(200).send(challenge);
   }
 
   return res.sendStatus(403);
 });
 
-app.post('/webhook', (req, res) => {
+app.post('/webhook', async (req, res) => {
   const body = req.body;
 
   if (body?.object === 'whatsapp_business_account') {
-    body.entry?.forEach((entry) => {
-      entry.changes?.forEach((change) => {
+    for (const entry of body.entry ?? []) {
+      for (const change of entry.changes ?? []) {
         const messages = change.value?.messages;
-        if (!messages || messages.length === 0) return;
+        if (!messages || messages.length === 0) continue;
 
-        messages.forEach((message) => {
+        for (const message of messages) {
           const from = message.from;
           const incomingText = message.text?.body;
           const reply = buildAutoReply(incomingText);
-          void sendTextMessage(from, reply);
-        });
-      });
-    });
+          await sendTextMessage(from, reply);
+        }
+      }
+    }
 
     return res.sendStatus(200);
   }
@@ -96,11 +107,21 @@ app.post('/webhook', (req, res) => {
   return res.sendStatus(404);
 });
 
-app.listen(PORT, () => {
-  console.log(`WhatsApp auto-reply bot listening on port ${PORT}`);
-  if (!isConfigured()) {
-    console.warn(
-      'Outbound replies are disabled until WHATSAPP_TOKEN and PHONE_NUMBER_ID are set.'
-    );
-  }
-});
+const start = () =>
+  app.listen(PORT, () => {
+    console.log(`WhatsApp auto-reply bot listening on port ${PORT}`);
+    if (!isConfigured()) {
+      console.warn(
+        'Outbound replies are disabled until WHATSAPP_TOKEN and PHONE_NUMBER_ID are set.'
+      );
+    }
+    if (!getVerifyToken()) {
+      console.warn('VERIFY_TOKEN is not set; webhook verification will fail.');
+    }
+  });
+
+if (require.main === module) {
+  start();
+}
+
+module.exports = { app, start };
