@@ -40,7 +40,7 @@ This project hosts a minimal WhatsApp Cloud API webhook that automatically repli
 
 ### Linking to the number 0256493349
 
-To use this bot with your WhatsApp number **0256493349**:
+To use this bot with your WhatsApp number **0256493349** (or swap in your own number if you fork this repo):
 
 1. In the Meta developer console, make sure 0256493349 is added as a **WhatsApp Business** number.
 2. Locate its **Phone Number ID** (not just the phone digits) in the WhatsApp > API Setup section.
